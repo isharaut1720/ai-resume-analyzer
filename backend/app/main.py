@@ -7,11 +7,11 @@ from app.ai_suggestions import get_suggestions, calculate_ats_score
 
 app = FastAPI()
 
-# ✅ CORS FIX (STRICT + CORRECT)
+# ✅ CORS (FIXED)
 origins = [
     "http://localhost:3000",
-    "http://127.0.0.1:3000"
-    "https://ai-resume-analyzer-isha-2026.netlify.app/"
+    "http://127.0.0.1:3000",
+    "https://ai-resume-analyzer-isha-2026.netlify.app"
 ]
 
 app.add_middleware(
@@ -22,6 +22,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ✅ OPTIONAL: root route (so "/" doesn't show Not Found)
+@app.get("/")
+def root():
+    return {"message": "Backend is running 🚀"}
+
 @app.post("/analyze/")
 async def analyze_resume(file: UploadFile = File(...)):
     try:
@@ -29,12 +34,12 @@ async def analyze_resume(file: UploadFile = File(...)):
 
         jobs = match_jobs(text)
         suggestions = get_suggestions(text)
-        ats_score = calculate_ats_score(text)  
+        ats_score = calculate_ats_score(text)
 
         return {
             "jobs": jobs,
             "suggestions": suggestions,
-            "ats_score": ats_score   
+            "ats_score": ats_score
         }
 
     except Exception as e:
